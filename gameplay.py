@@ -3,6 +3,7 @@ import os
 import json
 import pandas as pd
 import numpy as np
+from IPython.core.display import clear_output
 from tqdm import tqdm
 import time
 import pickle
@@ -17,54 +18,96 @@ class GamePlay:
         '''
 
         '''
-        self.character = None # character for current session
-        self.account_info = None # character selection for current session
-        self.account = None # Account class for current selection
-        self.current_menu = 'login' # track which interface user is at
-        print(f'--- Loading Account DataBase ---')
-        f = open(os.getcwd() + "/account_dict.json")
-        account_dict = json.loads(f.read())
-        self.account_df = pd.DataFrame(account_dict)
-        print(f'--- Finished Loading Job DataBase ---')
+        # print(f'--- Loading Account DataBase ---')
+        # f = open(os.getcwd() + "/account_dict.json")
+        # account_dict = json.loads(f.read())
+        # self.account_df = pd.DataFrame(account_dict)
+        # print(f'--- Finished Loading Account DataBase ---')
+        print(f'--- Loading Menu ---')
+        f = open(os.getcwd() + "/menu_dict.json")
+        self.menu_dict = json.loads(f.read())
+        print(f'--- Finished Loading menu DataBase ---')
+        self.character = None  # character for current session
+        self.account_info = None  # character selection for current session
+        self.current_menu = 'manage_account'  # track which interface user is at
+        self.account = Account()  # Account class for current selection
+        # self.account_df = self.account.account_df
+
+    def manage_account_menu(self):
+        flag = True
+        while flag:
+            alter = input('Do you want to create/delete account? Y/N ')
+            if alter == 'Y':
+                # Y for register N for deletion
+                register = input('Register? Y/N ')
+                if register == 'Y':
+                    # ask for account
+                    account = input("Enter your account: ")
+                    # ask for password
+                    password = input("Enter your password (no space please): ")
+                    self.account.create_new_account(account, password)
+                # if deletion
+                elif register == 'N':
+                    # ask for account
+                    account = input("Enter your account: ")
+                    # ask for password
+                    password = input("Enter your password: ")
+                    self.account.delete_account(account, password)
+                else:
+                    print('>>> Please enter "Y" or "N" <<<')
+                flag = False
+            elif alter == 'N':
+                flag = False
+                pass
+            else:
+                print('>>> Please enter "Y" or "N" <<<')
 
     def login_menu(self):
         '''
         log in with user input
         :return:
         '''
-        # TODO: account creation
-        credential = False
-        while not credential:
-            try:
-                # ask for account
-                account = input("Enter your account: ")
-                # ask for password
-                password = input("Enter your password: ")
-                # create class Account to verify with database
-                self.account = Account(self.account_df)
-                # AssertionError will be raise if credential is wrong
-                self.account.login(account, password)
-                # flag credential to be True if correct combination
-                credential = True
-                # load account info (characters)
-                print(f'--- Loading {self.account.account} Info ---')
-                self.account_info = self.account.load_account_info()
-                print(f'--- Finished Loading {self.account.account} Info ---')
-            except KeyError or AssertionError:
-                print(f'>>> Wrong Combination Of Credentials <<<')
-        # toggle next menu
-        self.current_menu = 'character_selection'
-        pass
+        if self.account.is_logged_in:
+            print(f'>>> {self.account.account} is currently logged in <<<')
+            logout = input(f'Do you want to logout? Y/N ')
+            if logout == 'Y':
+                self.account.logout()
+                print('>>> Proceeding to login <<<')
+                self.current_menu = 'login'
+            elif logout == 'N':
+                pass
+            else:
+                print('>>> Please enter "Y" or "N" <<<')
+        else:
+            while not self.account.is_logged_in:
+                try:
+                    # ask for account
+                    account = input("Enter your account: ")
+                    # ask for password
+                    password = input("Enter your password: ")
+                    # flag credential to be True if correct combination
+                    self.account.login(account, password)
+                    if not self.account.is_logged_in:
+                        raise AssertionError
+                except (KeyError, AssertionError):
+                    print(f'>>> Wrong Combination Of Credentials <<<')
+
+            pass
 
     def character_menu(self):
         character_selected = False
+        # load account info
+        print(f'--- Loading {self.account.account} Info ---')
+        self.account_info = self.account.load_account_info()
+        print(f'--- Finished Loading {self.account.account} Info ---')
         # if no character in selection menu
-        if self.account_info.shape[1] < 1:
+        if self.account.account_info.shape[1] < 1:
+            print(f'>>> {self.account.account} currently has no character <<<')
             # ask name to create new character
-            character_name = input("Enter character name: ")
+            character_name = input("Enter your first character's name: ")
             # create new character
             self.account.create_new_character(character_name)
-            # reload account info
+            # load account info
             print(f'--- Reloading {self.account.account} Info ---')
             self.account_info = self.account.load_account_info()
             print(f'--- Finished Reloading {self.account.account} Info ---')
@@ -79,7 +122,7 @@ class GamePlay:
                 self.character = self.account.select_character(int(character_id))
                 self.character.display_info()
                 character_selected = True
-            except AttributeError or KeyError:
+            except (AttributeError, KeyError):
                 pass
                 # print('>>> That Character Does Not Exist <<<')
             except ValueError:
@@ -93,6 +136,21 @@ class GamePlay:
         # toggle next menu
         self.current_menu = 'quit'
 
+    def next_menu(self):
+        # clear_output(wait=True)
+        invalid_next = True
+        while invalid_next:
+            print(f'\n>>> You are currently @ {self.current_menu} <<<')
+            for key, value in zip(self.menu_dict[self.current_menu], self.menu_dict[self.current_menu].values()):
+                print(f'{key}: {value}')
+            next_menu = input(f'Where do you want to proceed next: ')
+            try:
+                self.current_menu = self.menu_dict[self.current_menu][next_menu]
+                print(f'--- Proceeding to {self.current_menu} ---')
+                invalid_next = False
+            except KeyError:
+                print(f'>>> {next_menu} is not an option <<<')
+
     def menu(self):
         '''
         All interfaces (connected interfaces) included:
@@ -100,7 +158,9 @@ class GamePlay:
         character_selection (login, character_creation/deletion, in_game)
         TODO: in_game
         '''
-        if self.current_menu == 'login':
+        if self.current_menu == 'manage_account':
+            self.manage_account_menu()
+        elif self.current_menu == 'login':
             self.login_menu()
         elif self.current_menu == 'character_selection':
             self.character_menu()
@@ -109,6 +169,7 @@ class GamePlay:
         else:
             print(f'--- Quiting Toxic Shroom Game ---')
             quit()
+        self.next_menu()
 
     def start(self):
         '''
@@ -116,7 +177,6 @@ class GamePlay:
         :return:
         '''
         game = True
+        self.current_menu = 'manage_account'
         while game:
             self.menu()
-
-

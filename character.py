@@ -34,7 +34,7 @@ class Character:
     def display_info(self):
         print(f'Lvl: {self.level} {self.job_name}')
         # exp bar
-        print(f'[{"".join(["="] * (self.experience // 5))}]  {self.experience} %')
+        print(f'[{"".join(["="] * (self.experience // 5))}{"".join([" "] * (20 - self.experience // 5))}]  {self.experience} %')
         print(f'{self.character_name}')
 
     def kill_monster(self, exp_amount):

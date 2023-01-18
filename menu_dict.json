@@ -1,0 +1,38 @@
+{
+  "manage_account": {
+    "quit": "quit",
+    "1": "login",
+    "2": "manage_account"
+  },
+  "login": {
+    "quit": "quit",
+    "1": "manage_account",
+    "2": "character_selection",
+    "3": "login"
+  },
+  "character_selection": {
+    "quit": "quit",
+    "1": "login",
+    "2": "in_game",
+    "3": "character_selection"
+  },
+  "in_game": {
+    "quit": "quit",
+    "1": "login",
+    "2": "character_selection",
+    "3": "hene_hoe",
+    "4": "training_ground"
+  },
+  "hene_hoe": {
+    "quit": "quit",
+    "1": "login",
+    "2": "character_selection",
+    "3": "in_game"
+  },
+  "training_ground": {
+    "quit": "quit",
+    "1": "login",
+    "2": "character_selection",
+    "3": "in_game"
+  }
+}

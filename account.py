@@ -13,7 +13,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 class Account:
-    def __init__(self, account_df=None):
+    def __init__(self):
         '''
         :param account_df: account database
         '''
@@ -21,14 +21,69 @@ class Account:
         self.account = None
         self.is_logged_in = False
         self.character_id = None
-        if account_df is None:
-            print(f'--- Loading Account DataBase ---')
-            f = open(os.getcwd() + "/account_dict.json")
-            account_dict = json.loads(f.read())
-            self.account_df = pd.DataFrame(account_dict)
-            print(f'--- Finished Loading Job DataBase ---')
+        print(f'--- Loading Account DataBase ---')
+        # account database
+        f = open(os.getcwd() + "/ACCOUNT_INFO/account_dict.json")
+        account_dict = json.loads(f.read())
+        self.account_df = pd.DataFrame(account_dict)
+        # account ID for registration
+        f = open(os.getcwd() + "/ACCOUNT_INFO/account_id_dict.json")
+        self.account_id_dict = json.loads(f.read())
+        print(f'--- Finished Loading Account DataBase ---')
+
+    def create_new_account(self, account, password):
+        '''
+
+        :param account: username, cannot be redundant to existing accounts
+        :param password: password, cannot include space
+        :return: Boolean - True creation successful, False otherwise
+        '''
+        # check if space is in password
+        if ' ' in password:
+            print(f'>>> {password} contains illegal string <<<')
+            return False
+        # check if username already in use
+        elif account in list(self.account_df.columns):
+            print(f'>>> {account} has already been registered <<<')
+            return False
         else:
-            self.account_df = account_df
+            # get new account ID and update database
+            self.account_id_dict['normal'] += 1
+            temp = json.dumps(self.account_id_dict)
+            f = open("ACCOUNT_INFO/account_id_dict", "w")
+            f.write(temp)
+            f.close()
+
+            # register new account to database
+            self.account_df[account] = [password, 'normal', self.account_id_dict['normal']]
+            temp = json.dumps(self.account_df.to_dict())
+            f = open("ACCOUNT_INFO/account_dict.json", "w")
+            f.write(temp)
+            f.close()
+
+            # new account's account info(empty character template)
+            new_account_info = pd.read_csv(f'ACCOUNT_INFO/empty_account.csv', index_col=0)
+            new_account_info.to_csv(f'ACCOUNT_INFO/{account}.csv')
+            print(f'>>> {account} registered successfully <<<')
+            return True
+
+    def delete_account(self, account, password):
+        try:
+            # compare credential
+            assert password == self.account_df[account]['password']
+            # confirm with user about deletion
+            delete = input(f'Are you sure you want to delete {account}? Y/N ')
+            if delete == 'Y':
+                # drop corresponding column
+                self.account_df.drop(account, axis=1, inplace=True)
+                # update database
+                temp = json.dumps(self.account_df.to_dict())
+                f = open("ACCOUNT_INFO/account_dict.json", "w")
+                f.write(temp)
+                f.close()
+                print(f'>>> {account} Has Been Deleted Successfully <<<')
+        except AssertionError:
+            print(f'>>> Wrong Combination Of Credentials <<<')
 
     def login(self, account, password):
         try:
@@ -57,15 +112,15 @@ class Account:
             except NameError:
                 print(f'>>> No Character Is Found In The Account <<<')
                 self.account_info = pd.read_csv(f'ACCOUNT_INFO/empty_account.csv', index_col=0)
-            return self.account_info
+            # return self.account_info
         else:
             print(f'>>> Please Log In First <<<')
-            pass
 
     def create_new_character(self, character_name='Noob 516'):
         if self.account_info is None:
             print(f'>>> Please Load Account Info First <<<')
         else:
+            # shape = the largest index + 1
             character_id = self.account_info.shape[1]
             # level, exp, job_id, name
             self.account_info[character_id] = [1, 0, 0, character_name]
