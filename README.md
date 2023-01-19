@@ -23,7 +23,30 @@ _All descriptions below still in-progress_
 This is the main interface. You can go training to level up your character and farm for mesos [ˈmoʊzəs] -- don't worry if you didn't get this pronunciation reference. Some other options include hene-hoeing.
 
 ### 5. Training Ground
-Nothing done here.
+This is the battle field of your character and mobs. Currently map and mob are hard coded, while the exp and loot rewards are not updated with your character. Just to showcase the idea.
 
 ### 6. Hene-hoe
-This neither.
+Nothing done here.
+
+## Some basis of shroom game
+### 1. Four stats - strength (str), dexterity (dex), luck (luk), intelligence (int)
+Each job has a main stat. 
+Warrior class uses str;
+Archer -- dex;
+Thief -- luk;
+Magician -- int;
+Pirate -- str.
+
+### 2. Job advancement
+TBA
+
+## Some other concepts in progress
+### a) Equipment
+Equipment system should boost your character's various stats, such as weapon/magic attack and defense.
+
+### b) Spells
+Active spells -- can be power attack or buff / cost mana
+
+Passive spells -- can boost stats, such as evasion / doesn't cost mana
+
+## ...TO BE CONTINUED...
