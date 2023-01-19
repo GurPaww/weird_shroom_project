@@ -1,0 +1,73 @@
+{
+  "0": {
+    "job_name": "beginner",
+    "job_class": "beginner",
+    "main_stat": "str",
+    "job_race": "explorer",
+    "job_advance": 0,
+    "job_path": [
+      "swordsman",
+      "archer",
+      "rogue",
+      "magician",
+      "pirate"
+    ]
+  },
+  "1": {
+    "job_name": "swordsman",
+    "job_class": "warrior",
+    "main_stat": "str",
+    "job_race": "explorer",
+    "job_advance": 1,
+    "job_path": [
+      "fighter",
+      "page",
+      "spearman"
+    ]
+  },
+  "2": {
+    "job_name": "archer",
+    "job_class": "bowman",
+    "main_stat": "dex",
+    "job_race": "explorer",
+    "job_advance": 1,
+    "job_path": [
+      "hunter",
+      "crossbowman"
+    ]
+  },
+  "3": {
+    "job_name": "rogue",
+    "job_class": "thief",
+    "main_stat": "luk",
+    "job_race": "explorer",
+    "job_advance": 1,
+    "job_path": [
+      "assasin",
+      "bandit"
+    ]
+  },
+  "4": {
+    "job_name": "magician",
+    "job_class": "magician",
+    "main_stat": "int",
+    "job_race": "explorer",
+    "job_advance": 1,
+    "job_path": [
+      "wizard(fire/poision)",
+      "wizard(ice/lightening)",
+      "cleric"
+    ]
+  },
+  "5": {
+    "job_name": "pirate",
+    "job_class": "pirate",
+    "main_stat": "str",
+    "job_race": "explorer",
+    "job_advance": 1,
+    "job_path": [
+      "brawler",
+      "gunslinger"
+    ]
+  }
+}

@@ -1,22 +1,20 @@
-from datetime import date
 import os
 import json
 import pandas as pd
-import numpy as np
-from tqdm import tqdm
-import time
-import pickle
 import warnings
-from character import Character
+from GAME_CORE.character import Character
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 class Account:
     def __init__(self):
-        '''
-        :param account_df: account database
-        '''
+        """
+        account_info = character collections, pd.DataFrame
+        account = username, str
+        is_logged_in = whether an account is logged in or not, bool
+        character_id = selected character to proceed to in game
+        """
         self.account_info = None
         self.account = None
         self.is_logged_in = False
@@ -50,14 +48,14 @@ class Account:
             # get new account ID and update database
             self.account_id_dict['normal'] += 1
             temp = json.dumps(self.account_id_dict)
-            f = open("ACCOUNT_INFO/account_id_dict", "w")
+            f = open(os.getcwd() + "/ACCOUNT_INFO/account_id_dict.json", "w")
             f.write(temp)
             f.close()
 
             # register new account to database
             self.account_df[account] = [password, 'normal', self.account_id_dict['normal']]
             temp = json.dumps(self.account_df.to_dict())
-            f = open("ACCOUNT_INFO/account_dict.json", "w")
+            f = open(os.getcwd() + "/ACCOUNT_INFO/account_dict.json", "w")
             f.write(temp)
             f.close()
 
@@ -78,11 +76,11 @@ class Account:
                 self.account_df.drop(account, axis=1, inplace=True)
                 # update database
                 temp = json.dumps(self.account_df.to_dict())
-                f = open("ACCOUNT_INFO/account_dict.json", "w")
+                f = open(os.getcwd() + "/ACCOUNT_INFO/account_dict.json", "w")
                 f.write(temp)
                 f.close()
                 print(f'>>> {account} Has Been Deleted Successfully <<<')
-        except AssertionError:
+        except (AssertionError, KeyError):
             print(f'>>> Wrong Combination Of Credentials <<<')
 
     def login(self, account, password):
@@ -123,8 +121,8 @@ class Account:
             # shape = the largest index + 1
             character_id = self.account_info.shape[1]
             # level, exp, job_id, name
-            self.account_info[character_id] = [1, 0, 0, character_name]
-            self.account_info.to_csv(f'ACCOUNT_INFO/{self.account}.csv')
+            self.account_info[character_id] = [1, 0, 0, character_name, 10, 4, 4, 4]
+            self.save_progress()
 
     def select_character(self, character_id):
         if self.account_info is None:
@@ -133,7 +131,7 @@ class Account:
             try:
                 info = self.account_info[character_id]
                 self.character_id = character_id
-                return Character(info[0], info[1], info[2], info[3])
+                return Character(info[0], info[1], info[2], info[3], info[4], info[5], info[6], info[7])
             except KeyError:
                 print('>>> That Character Does Not Exist <<<')
 
@@ -147,13 +145,14 @@ class Account:
                     self.account_info.drop(character_id, axis=1, inplace=True)
                     # rearrange character ID
                     self.account_info.columns = [i for i in range(self.account_info.shape[1])]
-                    self.account_info.to_csv(f'ACCOUNT_INFO/{self.account}.csv')
+                    self.save_progress()
                 except KeyError:
                     print('>>> That Character Does Not Exist <<<')
 
-    def save_progress(self, new_account_info):
+    def save_progress(self):
         if self.account_info is None:
             print(f'>>> Please Load Account Info First <<<')
         else:
-            self.account_info = new_account_info
+            # self.account_info = new_account_info
+            print(f'--- Saving Current Account Progress ---')
             self.account_info.to_csv(f'ACCOUNT_INFO/{self.account}.csv')
