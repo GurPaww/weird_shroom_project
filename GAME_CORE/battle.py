@@ -7,7 +7,7 @@ import numpy as np
 from tqdm import tqdm
 import warnings
 from GAME_CORE.character import Character
-from mob import Mob
+from GAME_CORE.mob import Mob
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 

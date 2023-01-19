@@ -6,8 +6,9 @@ import time
 from IPython.core.display import clear_output
 
 from GAME_CORE.account import Account
-from battle import Battle
-from mob import Mob
+from GAME_CORE.battle import Battle
+from GAME_CORE.mob import Mob
+
 
 # the Menu system
 class Menu:
@@ -15,7 +16,7 @@ class Menu:
     def __init__(self):
         # current training ground session
         self.battle = None
-        self.mob = None # mob in current training ground
+        self.mob = None  # mob in current training ground
         print(f'--- Loading Menu ---')
         f = open(os.getcwd() + "/menu_dict.json")
         self.menu_dict = json.loads(f.read())
