@@ -1,28 +1,21 @@
-from datetime import date
+import sys
 import os
 import json
-import pandas as pd
-import numpy as np
-from IPython.core.display import clear_output
-from tqdm import tqdm
 import time
-import pickle
-import warnings
-from character import Character
-from account import Account
 
+from IPython.core.display import clear_output
 
-class GamePlay:
+from GAME_CORE.account import Account
+from battle import Battle
+from mob import Mob
+
+# the Menu system
+class Menu:
 
     def __init__(self):
-        '''
-
-        '''
-        # print(f'--- Loading Account DataBase ---')
-        # f = open(os.getcwd() + "/account_dict.json")
-        # account_dict = json.loads(f.read())
-        # self.account_df = pd.DataFrame(account_dict)
-        # print(f'--- Finished Loading Account DataBase ---')
+        # current training ground session
+        self.battle = None
+        self.mob = None # mob in current training ground
         print(f'--- Loading Menu ---')
         f = open(os.getcwd() + "/menu_dict.json")
         self.menu_dict = json.loads(f.read())
@@ -121,6 +114,7 @@ class GamePlay:
                 character_id = input("Enter character ID: ")
                 self.character = self.account.select_character(int(character_id))
                 self.character.display_info()
+                self.character.display_stats()
                 character_selected = True
             except (AttributeError, KeyError):
                 pass
@@ -132,9 +126,25 @@ class GamePlay:
 
     def in_game_menu(self):
         # TODO: in_game menu
+        pass
 
-        # toggle next menu
-        self.current_menu = 'quit'
+    def training_ground_menu(self):
+        clear_output(wait=True)
+        # TODO: class map
+        # map.display_map()
+        invalid_map = True
+        while invalid_map:
+            try:
+                map_id = int(input('Which map do you want to go: '))
+                self.mob = Mob()
+                invalid_map = False
+            except NameError:
+                print(f'>>> {map_id} is not an option <<<')
+        self.battle = Battle(self.character, self.mob, map_id)
+        time.sleep(0.5)
+        self.battle.battle_ground()
+        time.sleep(0.5)
+        self.battle.battle_summary()
 
     def next_menu(self):
         # clear_output(wait=True)
@@ -166,9 +176,12 @@ class GamePlay:
             self.character_menu()
         elif self.current_menu == 'in_game':
             self.in_game_menu()
+        elif self.current_menu == 'training_ground':
+            self.training_ground_menu()
         else:
             print(f'--- Quiting Toxic Shroom Game ---')
-            quit()
+            self.account.save_progress()
+            sys.exit()
         self.next_menu()
 
     def start(self):
