@@ -3,3 +3,7 @@ character_level,12,29
 character_exp,99,21
 job_id,1,3
 character_name,fate,luck
+str,70,4
+dex,4,4
+luk,4,205
+int,4,4

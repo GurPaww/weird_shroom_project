@@ -3,3 +3,7 @@ character_level
 character_exp
 job_id
 character_name
+str
+dex
+luk
+int
