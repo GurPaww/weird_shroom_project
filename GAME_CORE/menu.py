@@ -66,8 +66,8 @@ class Menu:
             logout = input(f'Do you want to logout? Y/N ')
             if logout == 'Y':
                 self.account.logout()
-                print('>>> Proceeding to login <<<')
-                self.current_menu = 'login'
+                print('>>> Proceeding to manage_account <<<')
+                self.current_menu = 'manage_account'
             elif logout == 'N':
                 pass
             else:

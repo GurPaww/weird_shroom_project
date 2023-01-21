@@ -13,12 +13,16 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 class Character:
 
     def __init__(self, level=1, experience=0, job_id=0, character_name='Noob 516', str_=10, dex=4, luk=4, int_=4):
-        '''
-        int level: level of the character
-        int experience: percentage of the character at current level
-        int job_id: job ID of the character
+        """
+        str level: level of the character
+        str experience: percentage of the character at current level
+        str job_id: job ID of the character
         str character_name: name of the character
-        '''
+        str str_:
+        str dex:
+        str luk:
+        str int_:
+        """
         print(f'--- Loading Job Info ---')
         f = open(os.getcwd() + "/JOB_INFO/job_dict.json")
         job_dict = json.loads(f.read())
@@ -118,6 +122,8 @@ class Character:
         else:
             print(f'~ {damage} ~')
         self.hit_point -= damage
+        # minimum hp is 0
+        self.hit_point = max(self.hit_point, 0)
         self.display_info()
 
     def kill_monster(self, exp_amount):

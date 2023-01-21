@@ -82,6 +82,8 @@ class Mob:
         else:
             print(f'~ {damage} ~')
         self.hit_point -= damage
+        # minimum hp is 0
+        self.hit_point = max(self.hit_point, 0)
         self.display_info()
 
     def is_dead(self):

@@ -24,17 +24,58 @@ class Battle:
             print('>>> Invalid Battle <<<')
         self.character = character
         self.mob = mob
+        # TODO: map dictionary
         self.map = 'Port Road: Six Path Crossway'
         print(f'--- Arrived Battle Ground @ {self.map} ---')
+        # whether to take/continue the fight or not
+        self.fight = None
 
+    def battle_preparation(self):
+        # if self.fight is None it means no attacks have taken place yet
+        if self.fight is None:
+            # notification of which mob you encounter
+            print(f'>>> [{self.mob.name}] Encountered <<<\n')
+            # display mob info
+            self.mob.display_stats()
+            # ask whether to take the fight
+            flag = True
+            while flag:
+                fight = input(f'Do you want to take the fight with [{self.mob.name}]? Y/N ')
+                if fight == 'Y' or fight == 'N':
+                    self.fight = fight
+                    flag = False
+                else:
+                    print('>>> Please enter "Y" or "N" <<<')
+        # if self.fight = 'Y'
+        elif self.fight == 'Y':
+            flag = True
+            while flag:
+                fight = input(f'Continue fighting with [{self.mob.name}]? Y/N ')
+                if fight == 'Y' or fight == 'N':
+                    self.fight = fight
+                    flag = False
+                else:
+                    print('>>> Please enter "Y" or "N" <<<')
+        # no circumstance for self.fight = 'N' to pass in here
+        else:
+            print('System: I do not see a fight here...')
+
+
+    # in-combat analysis
+    """
+    Player controlled character and spawned mob will take a fight, where they attack in turns.
+    Player always attacks first (issue attack), and mob always receives attack first.
+    """
     def battle_ground(self):
+        # if no decision is detected for whether to fight or not
+        if self.fight is None:
+            self.battle_preparation()
+
         # player attack first
         turn = 'character'
-        print(f'>>> [{self.character.character_name}] Encounters [{self.mob.name}] <<<\n')
-        self.mob.display_stats()
         # while both alive
-        while not self.character.is_dead() and not self.mob.is_dead():
-            time.sleep(1)
+        while self.fight == 'Y':
+            time.sleep(0.5)
             if turn == 'character':
                 print(f'\n\nSystem: [{self.character.character_name}] Attacks')
                 att, acc, type_ = self.character.issue_attack()
@@ -45,6 +86,10 @@ class Battle:
                 att, acc, type_ = self.character.issue_attack()
                 self.character.receive_attack(att, acc)
                 turn = 'character'
+            # if one side dies
+            if self.character.is_dead() or self.mob.is_dead():
+                break
+            self.battle_preparation()
 
     # Battle summary
     def battle_summary(self):
@@ -64,6 +109,7 @@ class Battle:
             self.character.display_info()
         else:
             print(f'>>> Battle Not Finished Yet <<<')
+        self.fight = None
 
 
 
