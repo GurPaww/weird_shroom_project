@@ -96,16 +96,21 @@ class Battle:
         print(f'\n--- Loading Post-Battle Summary ---')
         # if player survive
         if self.mob.is_dead():
-            # TODO: self.mob.exp()
+            # TODO: mob exp chart based on level and read from dataframe
+            # reward exp based on mob's level
+            exp_gain = round(np.power(self.mob.level, 1.3))
             # Idea: build exp and loot notification function in mob class
-            print(f'System: Gained 100 Exp')
+            print(f'System: Gained {exp_gain} Exp')
+            # TODO: loot list
             print(f'System: Looted:\n59 Mesos\n1 Orange Mushroom Cap')
-            self.character.display_info()
+            self.character.kill_monster(exp_gain)
         elif self.character.is_dead():
             # same for character
             # Randomize creative death notification, like minecraft
             print(f'System: {self.character.character_name} Got Killed ')
             print(f'>>> Teleporting Back To Nearest Town <<<')
+            # hp becomes 50 after reviving
+            self.character.hit_point = 50
             self.character.display_info()
         else:
             print(f'>>> Battle Not Finished Yet <<<')
