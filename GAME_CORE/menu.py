@@ -146,6 +146,7 @@ class Menu:
         self.battle.battle_ground()
         time.sleep(0.5)
         self.battle.battle_summary()
+        self.account.save_progress()
 
     def next_menu(self):
         # clear_output(wait=True)
